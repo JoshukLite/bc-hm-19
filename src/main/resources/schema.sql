@@ -25,14 +25,14 @@ CREATE TABLE applicants (
 );
 
 CREATE TABLE addresses (
-    user_id BIGINT,
+    applicant_id BIGINT,
     zip VARCHAR(64) NOT NULL,
     city VARCHAR(255) NOT NULL,
     street varchar(512) NOT NULL,
     build_number VARCHAR(32),
     apt VARCHAR(32),
-    CONSTRAINT addresses_PK PRIMARY KEY (user_id),
-    CONSTRAINT addresses_users_FK FOREIGN KEY (user_id) REFERENCES users ON DELETE CASCADE
+    CONSTRAINT addresses_PK PRIMARY KEY (applicant_id),
+    CONSTRAINT addresses_users_FK FOREIGN KEY (applicant_id) REFERENCES users ON DELETE CASCADE
 );
 
 CREATE TABLE phone_numbers (
@@ -43,4 +43,17 @@ CREATE TABLE phone_numbers (
     CONSTRAINT phone_numbers_PK PRIMARY KEY (id),
     CONSTRAINT phone_numbers_applicants_FK FOREIGN KEY (applicant_id) REFERENCES applicants ON DELETE CASCADE,
     CONSTRAINT phone_numbers_number_UQ UNIQUE (number)
-)
+);
+
+CREATE TABLE applications (
+    id BIGINT AUTO_INCREMENT,
+    applicant_id BIGINT NOT NULL,
+    money_amount NUMERIC(20,2) NOT NULL,
+    status ENUM('new', 'assigned', 'on_hold', 'approved', 'canceled', 'declined') NOT NULL,
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    assigned TIMESTAMP,
+    advisor_id BIGINT,
+    CONSTRAINT applications_PK PRIMARY KEY (id),
+    CONSTRAINT applications_applicants_FK FOREIGN KEY (applicant_id) REFERENCES applicants ON DELETE CASCADE,
+    CONSTRAINT applications_advisors_FK FOREIGN KEY (advisor_id) REFERENCES advisors
+);
